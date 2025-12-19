@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هدية خاصة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .title {
+            color: #b33971;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .envelope-container {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            margin: 0 auto 40px;
+            cursor: pointer;
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s ease;
+        }
+
+        .envelope.open {
+            transform: translateY(-20px);
+        }
+
+        .envelope-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6699 0%, #ff3366 100%);
+            clip-path: polygon(0% 0%, 100% 0%, 100% 85%, 50% 100%, 0% 85%);
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff3366 0%, #cc0044 100%);
+            clip-path: polygon(50% 0%, 100% 85%, 0% 85%);
+            border-radius: 8px;
+            transform-origin: top;
+            transition: transform 0.8s ease;
+            z-index: 2;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .envelope-seal {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: #ffcc00;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+
+        .envelope-image {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .envelope-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .message {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .message-text {
+            color: #b33971;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideInBounce 0.8s ease-out forwards;
+        }
+
+        .message-text:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .message-text:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .message-text .highlight {
+            color: #ff3366;
+            font-weight: bold;
+            display: inline-block;
+            animation: pulseGlow 2s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+        }
+
+        .message-footer {
+            color: #ff3366;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-top: 10px;
+            opacity: 0;
+            animation: fadeInRotate 1s ease-out 0.8s forwards;
+        }
+
+        .special-image {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            margin: 20px auto;
+            background-color: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            border: 3px solid #ff3366;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .special-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            transition: transform 0.5s ease;
+        }
+
+        .special-image:hover img {
+            transform: scale(1.05);
+        }
+
+        .special-image::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 51, 102, 0.1) 0%, rgba(255, 204, 0, 0.1) 100%);
+            z-index: 1;
+            pointer-events: none;
+            animation: gentlePulse 3s infinite;
+        }
+
+        .hearts-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 24px;
+            color: #ff3366;
+            opacity: 0;
+            animation: float 4s linear infinite;
+            filter: drop-shadow(0 0 5px rgba(255, 51, 102, 0.8));
+        }
+
+        .heart.heart-1 {
+            animation: float 4s linear infinite, heartBeat 1.5s ease-in-out infinite;
+        }
+
+        .heart.heart-2 {
+            animation: float 5s linear infinite, heartBeat 1.2s ease-in-out infinite;
+        }
+
+        .heart.heart-3 {
+            animation: float 3.5s linear infinite, heartBeat 1.8s ease-in-out infinite;
+        }
+
+        .star {
+            position: absolute;
+            font-size: 20px;
+            color: #ffcc00;
+            opacity: 0;
+            animation: starFloat 3s linear infinite;
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.9));
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffcc00;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkleFloat 2s linear infinite;
+            box-shadow: 0 0 10px #ffcc00;
+        }
+
+        .instructions {
+            color: #b33971;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes gentlePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideInBounce {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.8);
+            }
+            60% {
+                transform: translateY(-5px) scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                transform: scale(1);
+                text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+            }
+            50% {
+                transform: scale(1.15);
+                text-shadow: 0 0 20px rgba(255, 51, 102, 0.8), 0 0 30px rgba(255, 51, 102, 0.6);
+            }
+        }
+
+        @keyframes fadeInRotate {
+            0% {
+                opacity: 0;
+                transform: rotate(-5deg) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: rotate(0deg) scale(1);
+            }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            75% {
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes starFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) rotate(90deg) scale(1);
+            }
+            50% {
+                transform: translateY(50vh) rotate(180deg) scale(1.2);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(10vh) rotate(270deg) scale(1);
+            }
+            100% {
+                transform: translateY(-50px) rotate(360deg) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(80vh) translateX(20px) scale(1);
+            }
+            50% {
+                transform: translateY(50vh) translateX(-15px) scale(1.5);
+            }
+            80% {
+                opacity: 1;
+                transform: translateY(20vh) translateX(10px) scale(1);
+            }
+            100% {
+                transform: translateY(-50px) translateX(0) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .envelope-container {
+                width: 280px;
+                height: 190px;
+            }
+            
+            .message-text {
+                font-size: 1.3rem;
+            }
+            
+            .title {
+                font-size: 1.5rem;
+            }
+            
+            .special-image {
+                max-width: 100%;
+                height: 250px;
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">هدية خاصة 💝</h1>
+        
+        <div class="envelope-container" id="envelopeContainer">
+            <div class="envelope" id="envelope">
+                <div class="envelope-body">
+                    <div class="envelope-image">💌</div>
+                    <div class="envelope-text">انقري هنا</div>
+                </div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-seal">💝</div>
+            </div>
+        </div>
+        
+        <div class="message" id="message">
+            <div class="message-text">جمـعتك مباركة <span class="highlight">ياحلوة</span></div>
+            <div class="message-text">وجعل أيامك كلها مباركة <span class="highlight">ياحلوم</span></div>
+            
+            <div class="special-image" id="specialImage"></div>
+            
+            <div class="message-footer">💖 دوم مرتاحة دائمـآ 💖</div>
+        </div>
+        
+        <div class="instructions">انقري على الظرف لفتحه</div>
+    </div>
+    
+    <div class="hearts-container" id="heartsContainer"></div>
+    <div class="hearts-container" id="starsContainer"></div>
+    <div class="hearts-container" id="sparklesContainer"></div>
+    
+    <audio id="soundEffect" style="display: none;">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const envelope = document.getElementById('envelope');
+            const envelopeContainer = document.getElementById('envelopeContainer');
+            const message = document.getElementById('message');
+            const specialImage = document.getElementById('specialImage');
+            const heartsContainer = document.getElementById('heartsContainer');
+            const starsContainer = document.getElementById('starsContainer');
+            const sparklesContainer = document.getElementById('sparklesContainer');
+            const soundEffect = document.getElementById('soundEffect');
+            
+            let isOpen = false;
+            let heartsInterval;
+            let starsInterval;
+            let sparklesInterval;
+            
+            // فتح الظرف
+            envelopeContainer.addEventListener('click', function() {
+                if (!isOpen) {
+                    // فتح الظرف
+                    envelope.classList.add('open');
+                    
+                    // إظهار الرسالة بعد تأخير بسيط
+                    setTimeout(() => {
+                        message.classList.add('show');
+                        // إضافة تأثير للصورة الخاصة
+                        specialImage.style.animation = 'gentlePulse 1.5s ease-in-out 3';
+                    }, 400);
+                    
+                    // تشغيل صوت الفتح
+                    soundEffect.play().catch(e => console.log("يمكن تجاهل الصوت"));
+                    
+                    // إنشاء القلوب المتحركة
+                    createHearts();
+                    
+                    // إنشاء النجوم المتحركة
+                    createStars();
+                    
+                    // إنشاء البريق المتحرك
+                    createSparkles();
+                    
+                    isOpen = true;
+                    
+                    // إنشاء نمط الصورة المميز
+                    createSpecialPattern();
+                }
+            });
+            
+            // إنشاء نمط الصورة المميز
+            function createSpecialPattern() {
+                // تنظيف محتوى الصورة
+                specialImage.innerHTML = '';
+                
+                // إضافة الصورة كغلاف
+                const coverImage = document.createElement('img');
+                coverImage.src = 'ahlaam.PNG';
+                coverImage.alt = 'غلاف الهدية';
+                coverImage.style.opacity = '0';
+                coverImage.style.transition = 'opacity 1s ease-in-out';
+                
+                specialImage.appendChild(coverImage);
+                
+                // إظهار الصورة بتأثير fade-in
+                setTimeout(() => {
+                    coverImage.style.opacity = '1';
+                }, 100);
+            }
+            
+            // إنشاء القلوب المتحركة
+            function createHearts() {
+                // إزالة أي قلوب سابقة
+                if (heartsInterval) {
+                    clearInterval(heartsInterval);
+                }
+                
+                // إنشاء 15 قلباً
+                for (let i = 0; i < 15; i++) {
+                    setTimeout(() => {
+                        createHeart();
+                    }, i * 200);
+                }
+                
+                // الاستمرار في إنشاء قلوب بشكل متقطع
+                heartsInterval = setInterval(() => {
+                    if (Math.random() > 0.5) {
+                        createHeart();
+                    }
+                }, 1000);
+            }
+            
+            // إنشاء قلب واحد
+            function createHeart() {
+                const heart = document.createElement('div');
+                const heartTypes = ['❤️', '💖', '💕', '💗', '💓', '💝'];
+                const randomHeart = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+                heart.innerHTML = randomHeart;
+                
+                // أنواع مختلفة من القلوب مع حركات مختلفة
+                const heartClass = `heart heart-${Math.floor(Math.random() * 3) + 1}`;
+                heart.className = heartClass;
+                
+                // وضع عشوائي للقلب
+                const leftPos = Math.random() * 100;
+                heart.style.left = `${leftPos}%`;
+                
+                // تأخير عشوائي للحركة
+                const delay = Math.random() * 2;
+                heart.style.animationDelay = `${delay}s`;
+                
+                // حجم عشوائي
+                const size = Math.random() * 20 + 20;
+                heart.style.fontSize = `${size}px`;
+                
+                // ألوان مختلفة
+                const colors = ['#ff3366', '#ff6699', '#ff0066', '#cc0044', '#ff99cc'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                heartsContainer.appendChild(heart);
+                
+                // إزالة القلب بعد انتهاء الحركة
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }, 5000);
+            }
+
+            // إنشاء النجوم المتحركة
+            function createStars() {
+                if (starsInterval) {
+                    clearInterval(starsInterval);
+                }
+                
+                // إنشاء 10 نجوم
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        createStar();
+                    }, i * 300);
+                }
+                
+                starsInterval = setInterval(() => {
+                    if (Math.random() > 0.6) {
+                        createStar();
+                    }
+                }, 1500);
+            }
+
+            // إنشاء نجم واحد
+            function createStar() {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.innerHTML = '⭐';
+                
+                const leftPos = Math.random() * 100;
+                star.style.left = `${leftPos}%`;
+                
+                const delay = Math.random() * 2;
+                star.style.animationDelay = `${delay}s`;
+                
+                const size = Math.random() * 10 + 15;
+                star.style.fontSize = `${size}px`;
+                
+                starsContainer.appendChild(star);
+                
+                setTimeout(() => {
+                    if (star.parentNode) {
+                        star.remove();
+                    }
+                }, 3000);
+            }
+
+            // إنشاء البريق المتحرك
+            function createSparkles() {
+                if (sparklesInterval) {
+                    clearInterval(sparklesInterval);
+                }
+                
+                // إنشاء 20 بريق
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        createSparkle();
+                    }, i * 150);
+                }
+                
+                sparklesInterval = setInterval(() => {
+                    if (Math.random() > 0.5) {
+                        createSparkle();
+                    }
+                }, 800);
+            }
+
+            // إنشاء بريق واحد
+            function createSparkle() {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                const leftPos = Math.random() * 100;
+                sparkle.style.left = `${leftPos}%`;
+                
+                const delay = Math.random() * 1;
+                sparkle.style.animationDelay = `${delay}s`;
+                
+                const size = Math.random() * 3 + 3;
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+                
+                sparklesContainer.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    if (sparkle.parentNode) {
+                        sparkle.remove();
+                    }
+                }, 2000);
+            }
+            
+            // إضافة تأثير بسيط عند التحميل
+            setTimeout(() => {
+                envelopeContainer.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    envelopeContainer.style.transform = 'scale(1)';
+                }, 300);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+
